@@ -16,6 +16,10 @@
             <option value="3">2-3 星</option>
             <option value="2">1-2 星</option>
         </select>
+        <label>
+            <input type="checkbox" id="votesFilter" onchange="filterBooks()">
+            仅显示评分人数大于 5 的书籍
+        </label>
     </div>
 
     <table border="1">
@@ -54,14 +58,21 @@
         function parseBooks(content) {
             return content.split('\n').filter(line => line.trim()).map(line => {
                 const [id, order, category, rating, votes, name, words, author, link, dbId] = line.split(',');
-                return { name, author, category, rating: parseFloat(rating), words, link };
+                return { name, author, category, rating: parseFloat(rating), votes: parseInt(votes), words, link };
             });
         }
 
-        // 根据评分过滤书籍
+        // 根据评分和评分人数过滤书籍
         function filterBooks() {
             const ratingFilter = parseFloat(document.getElementById('ratingFilter').value) || 0;
-            const filteredBooks = allBooks.filter(book => book.rating >= ratingFilter && book.rating < ratingFilter + 1);
+            const filterVotes = document.getElementById('votesFilter').checked;
+
+            const filteredBooks = allBooks.filter(book => {
+                const isRatingMatch = ratingFilter === 0 || (book.rating >= ratingFilter && book.rating < ratingFilter + 1);
+                const isVotesMatch = !filterVotes || book.votes >= 5;
+                return isRatingMatch && isVotesMatch;
+            });
+
             displayBooks(filteredBooks);
         }
 
