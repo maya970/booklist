@@ -50,7 +50,7 @@
                 <th>书名</th>
                 <th>字数</th>
                 <th>作者</th>
-                
+                <th>链接</th>
             </tr>
         </thead>
         <tbody>
@@ -125,7 +125,7 @@
                     <td>${book.title}</td>
                     <td>${book.wordCount}</td>
                     <td>${book.author}</td>
-                    
+                    <td><a href="${book.link}" target="_blank">链接</a></td>
                 `;
                 tbody.appendChild(tr);
             });
