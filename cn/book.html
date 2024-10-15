@@ -321,9 +321,13 @@
         }
 
         // 按评分从高到低排序
-        function sortBooks(field) {
-            filteredBooks.sort((a, b) => (b[field] || 0) - (a[field] || 0));
-        }
+function sortBooks(field) {
+    filteredBooks.sort((a, b) => {
+        const ratingA = isNaN(a[field]) ? -Infinity : a[field]; // 将NaN视为极小值
+        const ratingB = isNaN(b[field]) ? -Infinity : b[field]; // 将NaN视为极小值
+        return ratingB - ratingA; // 从大到小排序
+    });
+}
 
         // 点击表头进行排序
         function sortTable(field) {
