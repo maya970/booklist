@@ -25,7 +25,7 @@
     <script>
         // 使用 AJAX 从 API 加载书籍数据
         function loadBooks() {
-            fetch('/api/books')  // 请求 Vercel 的 Serverless Function
+            fetch('/api/data')  // 请求 Vercel 的 Serverless Function
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('网络错误: ' + response.status);
