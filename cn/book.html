@@ -282,30 +282,33 @@
             document.getElementById('nextPage').disabled = end >= books.length;
         }
 
-        // 过滤表格
-        function filterTable() {
-            const nameInput = document.getElementById("nameFilter").value.toUpperCase();
-            const categoryFilter = document.getElementById("categoryFilter").value;
-            const ratingFilter = document.getElementById("ratingFilter").value;
+      
+// 过滤表格
+function filterTable() {
+    const nameInput = document.getElementById("nameFilter").value.toUpperCase();
+    const categoryFilter = document.getElementById("categoryFilter").value;
+    const ratingFilter = document.getElementById("ratingFilter").value;
 
-            filteredBooks = allBooks.filter(book => {
-                const matchesName = book.title.toUpperCase().includes(nameInput);
-                const matchesCategory = !categoryFilter || book.category.includes(categoryFilter);
-                const matchesRating = filterByRating(book.rating, ratingFilter);
+    filteredBooks = allBooks.filter(book => {
+        const matchesName = book.title.toUpperCase().includes(nameInput);
+        const matchesCategory = !categoryFilter || book.category.includes(categoryFilter);
+        const matchesRating = filterByRating(book.rating, ratingFilter);
+        const matchesRatingCount = book.ratingCount >= 5; // 新增过滤：评分人数 >= 5
 
-                return matchesName && matchesCategory && matchesRating;
-            });
+        return matchesName && matchesCategory && matchesRating && matchesRatingCount;
+    });
 
-            currentPage = 1;
-            populateTable(filteredBooks);
-        }
+    currentPage = 1;
+    populateTable(filteredBooks);
+}
 
-        // 按评分区间过滤
-        function filterByRating(rating, filter) {
-            if (filter === "") return true; // 不过滤
-            const [min, max] = filter.split('-').map(Number);
-            return rating >= min && rating < max;
-        }
+// 按评分区间过滤
+function filterByRating(rating, filter) {
+    if (filter === "") return true; // 不过滤
+    const [min, max] = filter.split('-').map(Number);
+    return rating >= min && rating < max;
+}
+
 
         // 改变页面
         function changePage(direction) {
