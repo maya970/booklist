@@ -56,17 +56,35 @@
         // 从服务器加载书籍数据
         async function loadBooks() {
             try {
-                const response = await fetch('books.php'); // 确保路径正确
+                const response = await fetch('books.txt'); // 加载 TXT 文件
                 if (!response.ok) {
                     throw new Error('网络错误: ' + response.status);
                 }
-                allBooks = await response.json(); // 解析 JSON 数据
-                console.log(allBooks); // 调试信息，确保数据加载
+                const text = await response.text(); // 读取文本数据
+                parseBooks(text); // 解析书籍数据
                 filteredBooks = allBooks; // 初始化过滤后的书籍为所有书籍
                 populateTable(filteredBooks);
             } catch (error) {
                 console.error('加载书籍时出错:', error);
             }
+        }
+
+        // 解析书籍数据
+        function parseBooks(text) {
+            const lines = text.trim().split('\n'); // 按行分割
+            allBooks = lines.map(line => {
+                const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
+                return {
+                    id: parseInt(parts[0]),
+                    category: parts[2], // 类别
+                    rating: parseFloat(parts[3]),
+                    wordCount: parseInt(parts[4]),
+                    title: parts[5],
+                    author: parts[7],
+                    image: parts[8],
+                    publishDate: parts[9]
+                };
+            });
         }
 
         // 填充表格
