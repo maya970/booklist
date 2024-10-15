@@ -5997,4 +5997,4 @@
 72025,0,'未分类',0.0,0,'谋业',4452,'许珩','https://i9-static.jjwxc.net/novelimage.php?novelid=2862671&coverid=6&ver=14b60e742a4522fc10e21ef29b6fb79f','2016-07-26T16:12:39.000Z',0,
 72026,0,'未分类',0.0,0,'丫鬟也能闯江湖',51759,'锁棠雨','https://i9-static.jjwxc.net/novelimage.php?novelid=2862618&coverid=4&ver=d9707ad016af8f8527477d12ae47a4c1','2017-03-20T10:05:48.000Z',0,
 72028,0,'未分类',0.0,0,'穿越异界之被坑成神',7065,'尖吻蝮','https://i9-static.jjwxc.net/novelimage.php?novelid=2865578&coverid=13&ver=e20498786429cddc7e9430e932b65399','2017-08-15T15:52:01.000Z',0,
-72030,1,'未分类',0.0,0,'魔王的错误打开方式',1514,'最爱猫之笑','http://i9-static.jjwxc.net/novelimage.php?novelid=2868120&coverid=1&ver=b6767f9585186e0319f13e5d34591b49','2016-07-29T09:28:45.000Z',0,
+72030,1,'未分类',0.0,0,'魔王的错误打开方式',1514,'最爱猫之笑','http://i9-static.jjwxc.net/novelimage.php?novelid=2868120&coverid=1&ver=b6767f9585186e0319f13e5d34591b49','2016-07-29T09:28:45.000Z',0,
