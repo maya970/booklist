@@ -1,4 +1,8 @@
 <?php
+// 添加 CORS 头部
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+
 // 读取书籍数据并将其输出为 JSON 格式
 $books = [
     [5, 1, '历史, 架空历史', 7.2, 180, '《明》', 1296800, '酒徒', 'https://qidian.qpic.cn/qdbimg/349573/5647/300', '2004-12-23T16:00:00.000Z', 0],
@@ -22,6 +26,5 @@ foreach ($books as $book) {
 }
 
 // 将书籍信息输出为 JSON 格式
-header('Content-Type: application/json');
 echo json_encode($response);
 ?>
