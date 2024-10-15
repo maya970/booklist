@@ -262,11 +262,9 @@ function parseBooks(text) {
             author: parts[7].replace(/'/g, ""), // 作者
             link: parts[8].replace(/'/g, ""), // 链接
         };
-
-                
-            });
-            allBooks = allBooks.concat(books); // 合并所有书籍
-        }
+    });
+    allBooks = allBooks.concat(books); // 合并所有书籍
+}
 
         // 填充表格
         function populateTable(books) {
