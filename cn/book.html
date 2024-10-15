@@ -270,6 +270,7 @@
             paginatedBooks.forEach(book => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
+                    <td>${book.id}</td>
                     <td>${book.rating}</td>
                     <td>${book.category}</td>
                     <td>${book.ratingCount}</td>
