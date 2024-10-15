@@ -148,26 +148,149 @@
 
 
           
- <h1>书籍列表</h1>
-    <table>
+     <h1>书籍列表</h1>
+    
+    <div>
+        <input type="text" id="nameFilter" onkeyup="filterTable()" placeholder="搜索书名..">
+        <select id="categoryFilter" onchange="filterTable()">
+            <option value="">所有类别</option>
+            <option value="历史">历史</option>
+            <option value="架空历史">架空历史</option>
+            <option value="两晋隋唐">两晋隋唐</option>
+            <option value="两宋元明">两宋元明</option>
+        </select>
+        <select id="ratingFilter" onchange="filterTable()">
+            <option value="">所有评分</option>
+            <option value="7.2">7.2 星及以上</option>
+            <option value="6">6 星及以上</option>
+            <option value="5">5 星及以上</option>
+            <option value="4">4 星及以上</option>
+        </select>
+    </div>
+    
+    <table id="bookTable">
         <thead>
             <tr>
-                <th>书籍ID</th>
-                <th>标签</th>
+                <th>编号</th>
+                <th>类别</th>
                 <th>评分</th>
-                <th>页数</th>
+                <th>评分人数</th>
                 <th>书名</th>
                 <th>字数</th>
                 <th>作者</th>
-                <th>封面</th>
-                <th>出版日期</th>
-                <th>是否收藏</th>
+                <th>链接</th>
             </tr>
         </thead>
-        <tbody id="booksTable">
-            <!-- 书籍信息将通过 JavaScript 填充 -->
+        <tbody>
+            <!-- 动态加载书籍数据 -->
         </tbody>
     </table>
+    
+    <div>
+        <button id="prevPage" onclick="changePage(-1)">上一页</button>
+        <button id="nextPage" onclick="changePage(1)">下一页</button>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let filteredBooks = [];
+        let allBooks = [];
+
+        // 从服务器加载书籍数据
+        async function loadBooks() {
+            try {
+                const response = await fetch('books.txt'); // 加载 TXT 文件
+                if (!response.ok) {
+                    throw new Error('网络错误: ' + response.status);
+                }
+                const text = await response.text(); // 读取文本数据
+                parseBooks(text); // 解析书籍数据
+                filteredBooks = allBooks; // 初始化过滤后的书籍为所有书籍
+                populateTable(filteredBooks);
+            } catch (error) {
+                console.error('加载书籍时出错:', error);
+            }
+        }
+
+        // 解析书籍数据
+        function parseBooks(text) {
+            const lines = text.trim().split('\n'); // 按行分割
+            allBooks = lines.map(line => {
+                const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
+                
+                return {
+                    id: parseInt(parts[0]),                      // 编号
+                    serial: parseInt(parts[1]),                  // 序号，若需要可以添加到表格中
+                    category: parts[2].replace(/'/g, ""),        // 类别
+                    rating: parseFloat(parts[4]) || 'N/A',       // 评分
+                    ratingCount: parseInt(parts[5]) || 'N/A',    // 评分人数
+                    title: parts[6].replace(/'/g, ""),           // 书名
+                    wordCount: parseInt(parts[7]) || 'N/A',      // 字数
+                    author: parts[8].replace(/'/g, ""),          // 作者
+                    link: parts[9].replace(/'/g, ""),            // 链接
+                    dbId: parseInt(parts[10]) || 'N/A',           // 数据库编号
+                };
+            });
+        }
+
+        // 填充表格
+        function populateTable(books) {
+            const tbody = document.getElementById('bookTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; // 清空表格内容
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedBooks = books.slice(start, end); // 分页
+
+            paginatedBooks.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>${book.category}</td>
+                    <td>${book.rating}</td>
+                    <td>${book.ratingCount}</td>
+                    <td>${book.title}</td>
+                    <td>${book.wordCount}</td>
+                    <td>${book.author}</td>
+                    <td><a href="${book.link}" target="_blank">链接</a></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 更新分页按钮的状态
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = end >= books.length;
+        }
+
+        // 过滤表格
+        function filterTable() {
+            const nameInput = document.getElementById("nameFilter").value.toUpperCase();
+            const categoryFilter = document.getElementById("categoryFilter").value;
+            const ratingFilter = document.getElementById("ratingFilter").value;
+
+            // 过滤书籍数据
+            filteredBooks = allBooks.filter(book => {
+                const matchesName = book.title.toUpperCase().includes(nameInput);
+                const matchesCategory = !categoryFilter || book.category.includes(categoryFilter);
+                const matchesRating = !ratingFilter || (book.rating !== 'N/A' && book.rating >= parseFloat(ratingFilter));
+
+                return matchesName && matchesCategory && matchesRating;
+            });
+
+            currentPage = 1; // 重置到第一页
+            populateTable(filteredBooks); // 重新填充表格
+        }
+
+        // 改变页面
+        function changePage(direction) {
+            currentPage += direction; // 根据方向改变当前页码
+            populateTable(filteredBooks); // 更新表格显示
+        }
+
+        // 加载书籍数据
+        loadBooks();
+    </script>
 
             
            
@@ -197,37 +320,6 @@
     </div>
     <!-- 锚点平滑移动 -->
     <script type="text/javascript">
-
-        // 使用 AJAX 从 PHP 文件加载书籍数据
-        function loadBooks() {
-            fetch('data.php')
-                .then(response => response.json())
-                .then(data => {
-                    const table = document.getElementById('booksTable');
-                    table.innerHTML = ''; // 清空表格
-
-                    data.forEach(book => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${book[0]}</td>
-                            <td>${book[2]}</td>
-                            <td>${book[3]}</td>
-                            <td>${book[4]}</td>
-                            <td>${book[5]}</td>
-                            <td>${book[6]}</td>
-                            <td>${book[7]}</td>
-                            <td><img src="${book[8]}" alt="${book[5]}" width="50"></td>
-                            <td>${book[9]}</td>
-                            <td>${book[10]}</td>
-                        `;
-                        table.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Error loading books:', error));
-        }
-
-        // 页面加载时加载书籍数据
-        window.onload = loadBooks;
 
 
       
