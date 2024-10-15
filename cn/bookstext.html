@@ -1,75 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        img {
-            width: 50px;
-        }
-    </style>
+    <title>书籍列表</title>
 </head>
 <body>
-    <h1>Book List</h1>
-    <table id="books-table">
+    <h1>书籍列表</h1>
+    
+    <div>
+        <input type="text" id="nameFilter" onkeyup="filterTable()" placeholder="搜索书名..">
+        <select id="categoryFilter" onchange="filterTable()">
+            <option value="">所有类别</option>
+            <option value="同人奇幻">同人奇幻</option>
+            <option value="国内历史">国内历史</option>
+            <option value="外国历史">外国历史</option>
+        </select>
+        <select id="ratingFilter" onchange="filterTable()">
+            <option value="">所有评分</option>
+            <option value="5">4-5 星</option>
+            <option value="4">3-4 星</option>
+            <option value="3">2-3 星</option>
+            <option value="2">1-2 星</option>
+            <option value="1">0-1 星</option>
+        </select>
+    </div>
+    
+    <table id="bookTable">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Rating</th>
-                <th>Cover</th>
+                <th>书名</th>
+                <th>网站</th>
+                <th>提交者</th>
+                <th>类别</th>
+                <th>子类别</th>
+                <th>评分</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            <!-- 动态加载书籍数据 -->
+        </tbody>
     </table>
+    
+    <div>
+        <button id="prevPage" onclick="changePage(-1)">上一页</button>
+        <button id="nextPage" onclick="changePage(1)">下一页</button>
+    </div>
 
     <script>
-        function loadBooks() {
-            fetch('/api/books.php')  // PHP API 的路径
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('网络错误: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const tbody = document.querySelector('#books-table tbody');
-                    data.forEach(book => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${book[0]}</td>
-                            <td>${book[5]}</td>
-                            <td>${book[7]}</td>
-                            <td>${book[3]}</td>
-                            <td><img src="${book[8]}" alt="${book[5]}"></td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('加载书籍时出错:', error);
-                    alert('加载书籍时出错: ' + error.message);
-                });
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let filteredBooks = [];
+        let allBooks = [];
+
+        async function loadBooks() {
+            try {
+                const response = await fetch('/api/books.php'); // 替换为您的 API 路径
+                if (!response.ok) {
+                    throw new Error('网络错误: ' + response.status);
+                }
+                const data = await response.json();
+                allBooks = data; // 存储所有书籍数据
+                filteredBooks = allBooks; // 初始化过滤后的书籍为所有书籍
+                populateTable(filteredBooks);
+            } catch (error) {
+                console.error('加载书籍时出错:', error);
+            }
         }
 
+        function populateTable(books) {
+            const tbody = document.getElementById('bookTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; // 清空表格内容
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedBooks = books.slice(start, end); // 分页
+
+            paginatedBooks.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${book[5]}</td>
+                    <td>${book[7]}</td>
+                    <td>${book[2]}</td>
+                    <td>${book[3]}</td>
+                    <td>${book[4]}</td>
+                    <td>${book[1]}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterTable() {
+            const nameInput = document.getElementById("nameFilter").value.toUpperCase();
+            const categoryFilter = document.getElementById("categoryFilter").value.toUpperCase();
+            const ratingFilter = document.getElementById("ratingFilter").value;
+
+            // 过滤书籍数据
+            filteredBooks = allBooks.filter(book => {
+                const matchesName = book[5].toUpperCase().includes(nameInput);
+                const matchesCategory = !categoryFilter || book[3].toUpperCase() === categoryFilter;
+                const matchesRating = !ratingFilter || book[1] >= ratingFilter;
+
+                return matchesName && matchesCategory && matchesRating;
+            });
+
+            currentPage = 1; // 重置到第一页
+            populateTable(filteredBooks); // 重新填充表格
+        }
+
+        function changePage(direction) {
+            currentPage += direction; // 根据方向改变当前页码
+            populateTable(filteredBooks); // 更新表格显示
+        }
+
+        // 加载书籍数据
         loadBooks();
     </script>
 </body>
