@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书籍列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        // 使用 AJAX 从 PHP 文件加载书籍数据
+        function loadBooks() {
+            fetch('data.php')
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('booksTable');
+                    table.innerHTML = ''; // 清空表格
+
+                    data.forEach(book => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${book[0]}</td>
+                            <td>${book[2]}</td>
+                            <td>${book[3]}</td>
+                            <td>${book[4]}</td>
+                            <td>${book[5]}</td>
+                            <td>${book[6]}</td>
+                            <td>${book[7]}</td>
+                            <td><img src="${book[8]}" alt="${book[5]}" width="50"></td>
+                            <td>${book[9]}</td>
+                            <td>${book[10]}</td>
+                        `;
+                        table.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error loading books:', error));
+        }
+
+        // 页面加载时加载书籍数据
+        window.onload = loadBooks;
+    </script>
+</head>
+<body>
+    <h1>书籍列表</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>书籍ID</th>
+                <th>标签</th>
+                <th>评分</th>
+                <th>页数</th>
+                <th>书名</th>
+                <th>字数</th>
+                <th>作者</th>
+                <th>封面</th>
+                <th>出版日期</th>
+                <th>是否收藏</th>
+            </tr>
+        </thead>
+        <tbody id="booksTable">
+            <!-- 书籍信息将通过 JavaScript 填充 -->
+        </tbody>
+    </table>
+</body>
+</html>
