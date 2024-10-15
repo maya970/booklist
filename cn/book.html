@@ -190,7 +190,7 @@
             <tr>
                
                 <th onclick="sortTable('rating')">评分</th>
-                 <th>编号</th>
+
                 <th>类别</th>
                 <th>评分人数</th>
                 <th>书名</th>
@@ -248,7 +248,7 @@
                 return {
                    
                     rating: parseFloat(parts[3]) || 'N/A',       // 评分
-                     id: parseInt(parts[0]),                    // 编号
+        
                     category: parts[2].replace(/'/g, ""),        // 类别
                     ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
                     title: parts[5].replace(/'/g, ""),           // 书名
@@ -274,7 +274,7 @@
                 tr.innerHTML = `
                     
                     <td>${book.rating}</td>
-                    <td>${book.id}</td>
+
                     <td>${book.category}</td>
                     <td>${book.ratingCount}</td>
                     <td>${book.title}</td>
