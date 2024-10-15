@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        img {
+            width: 50px;
+        }
+    </style>
 </head>
 <body>
     <h1>Book List</h1>
@@ -22,7 +43,7 @@
 
     <script>
         function loadBooks() {
-            fetch('/api/books')  // 确保这个路径是正确的
+            fetch('/api/books.php')  // PHP API 的路径
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('网络错误: ' + response.status);
@@ -38,7 +59,7 @@
                             <td>${book[5]}</td>
                             <td>${book[7]}</td>
                             <td>${book[3]}</td>
-                            <td><img src="${book[8]}" alt="${book[5]}" style="width:50px;"></td>
+                            <td><img src="${book[8]}" alt="${book[5]}"></td>
                         `;
                         tbody.appendChild(row);
                     });
