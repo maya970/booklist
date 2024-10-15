@@ -169,15 +169,23 @@
     <div>
         <input type="text" id="nameFilter" onkeyup="filterTable()" placeholder="搜索书名..">
         <select id="categoryFilter" onchange="filterTable()">
-            <option value="">分类</option>
+            <option value="">所有类别</option>
             <option value="历史">历史</option>
-            <option value="架空历史">架空历史</option>
-            <option value="两晋隋唐">两晋隋唐</option>
-            <option value="两宋元明">两宋元明</option>
+            <option value="秦代左右">秦代左右</option>
+            <option value="汉与三国">汉与三国</option>
+            <option value="晋代左右">晋代左右</option>
+            <option value="晋代左右">隋唐左右</option>
+            <option value="晋代左右">宋代左右</option>
+            <option value="晋代左右">元代左右</option>
+            <option value="晋代左右">明代左右</option>
+            <option value="晋代左右">近代左右</option>
+            
         </select>
         <select id="ratingFilter" onchange="filterTable()">
-            <option value="">评分</option>
-            <option value="7-10">7-10 星</option> 
+            <option value="">所有评分</option>
+            <option value="9-10">9-10 星</option>
+             <option value="8-9">8-9 星</option>
+            <option value="7-8">7-8 星</option>
             <option value="6-7">6-7 星</option>
             <option value="5-6">5-6 星</option>
             <option value="4-5">4-5 星</option>
@@ -188,9 +196,8 @@
     <table id="bookTable">
         <thead>
             <tr>
-               
-                <th onclick="sortTable('rating')">评分</th>
                  <th>编号</th>
+                <th onclick="sortTable('rating')">评分</th>
                 <th>类别</th>
                 <th>评分人数</th>
                 <th>书名</th>
@@ -216,12 +223,12 @@
         let allBooks = [];
 
         const fileNames = [
-            'book1.txt',
-            'book2.txt',
-            'book3.txt',
-            'book4.txt',
-            'book5.txt',
-            'book6.txt'
+            'hbookpart1.txt',
+            'hbookpart2.txt',
+            'hbookpart3.txt',
+            'hbookpart4.txt',
+            'hbookpart5.txt',
+            'hbookpart6.txt'
         ];
 
         // 加载所有书籍文件
@@ -246,9 +253,8 @@
                 const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
 
                 return {
-                   
+                    id: parseFloat(parts[0]) || 'N/A',       // 编号
                     rating: parseFloat(parts[3]) || 'N/A',       // 评分
-                     id: parseInt(parts[0]),                    // 编号
                     category: parts[2].replace(/'/g, ""),        // 类别
                     ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
                     title: parts[5].replace(/'/g, ""),           // 书名
@@ -272,9 +278,8 @@
             paginatedBooks.forEach(book => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    
+                <td>${book.id}</td>
                     <td>${book.rating}</td>
-                    <td>${book.id}</td>
                     <td>${book.category}</td>
                     <td>${book.ratingCount}</td>
                     <td>${book.title}</td>
