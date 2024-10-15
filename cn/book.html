@@ -177,6 +177,8 @@
         </select>
         <select id="ratingFilter" onchange="filterTable()">
             <option value="">所有评分</option>
+            <option value="6-7">9-10 星</option>
+            <option value="6-7">8-9 星</option>
             <option value="6-7">6-7 星</option>
             <option value="5-6">5-6 星</option>
             <option value="4-5">4-5 星</option>
@@ -187,6 +189,7 @@
     <table id="bookTable">
         <thead>
             <tr>
+                 <th>编号</th>
                 <th onclick="sortTable('rating')">评分</th>
                 <th>类别</th>
                 <th>评分人数</th>
@@ -243,6 +246,7 @@
                 const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
 
                 return {
+                    id: parseFloat(parts[0]) || 'N/A',       // 编号
                     rating: parseFloat(parts[3]) || 'N/A',       // 评分
                     category: parts[2].replace(/'/g, ""),        // 类别
                     ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
@@ -267,6 +271,7 @@
             paginatedBooks.forEach(book => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
+                <td>${book.id}</td>
                     <td>${book.rating}</td>
                     <td>${book.category}</td>
                     <td>${book.ratingCount}</td>
