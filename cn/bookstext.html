@@ -1,102 +1,201 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>书籍展示</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="viggo" />
+    <title>黑暗轻小说 - 专门推细糠</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body>
-    <div id="filters">
-        <select id="ratingFilter" onchange="filterBooks()">
+
+<body class="page-body">
+    <h1>书籍列表</h1>
+
+    <div>
+        <input type="text" id="nameFilter" onkeyup="filterTable()" placeholder="搜索书名..">
+        <select id="categoryFilter" onchange="filterTable()">
+            <option value="">所有类别</option>
+            <option value="历史">历史</option>
+            <option value="架空历史">架空历史</option>
+            <option value="两晋隋唐">两晋隋唐</option>
+            <option value="两宋元明">两宋元明</option>
+        </select>
+        <select id="ratingFilter" onchange="filterTable()">
             <option value="">所有评分</option>
-            <option value="7">6-7 星</option>
-            <option value="6">5-6 星</option>
-            <option value="5">4-5 星</option>
-            <option value="4">3-4 星</option>
-            <option value="3">2-3 星</option>
-            <option value="2">1-2 星</option>
+            <option value="6-7">6-7 星</option>
+            <option value="5-6">5-6 星</option>
+            <option value="4-5">4-5 星</option>
+            <option value="0-4">0-4 星</option>
         </select>
         <label>
-            <input type="checkbox" id="votesFilter" onchange="filterBooks()">
-            仅显示评分人数大于 5 的书籍
+            <input type="checkbox" id="ratingCountFilter" onchange="filterTable()"> 过滤评分人数少于5
         </label>
     </div>
 
-    <table border="1">
+    <table id="bookTable">
         <thead>
             <tr>
-                <th>书名</th>
-                <th>作者</th>
+                <th onclick="sortTable('rating')">评分</th>
                 <th>类别</th>
-                <th>评分</th>
+                <th>评分人数</th>
+                <th>书名</th>
                 <th>字数</th>
+                <th>作者</th>
                 <th>链接</th>
             </tr>
         </thead>
-        <tbody id="bookTable">
-            <!-- 动态添加行 -->
+        <tbody>
+            <!-- 动态加载书籍数据 -->
         </tbody>
     </table>
 
+    <div>
+        <button id="prevPage" onclick="changePage(-1)">上一页</button>
+        <button id="nextPage" onclick="changePage(1)">下一页</button>
+    </div>
+
     <script>
-        const filePaths = ['1.txt', '2.txt', '3.txt', '4.txt', '5.txt', '6.txt'];
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let filteredBooks = [];
         let allBooks = [];
 
-        // 加载所有文件并解析内容
+        const fileNames = [
+            'book1.txt',
+            'book2.txt',
+            'book3.txt',
+            'book4.txt',
+            'book5.txt',
+            'book6.txt'
+        ];
+
+        // 加载所有书籍文件
         async function loadBooks() {
-            const fetchPromises = filePaths.map(path =>
-                fetch(path).then(response => response.text())
-            );
-            const contents = await Promise.all(fetchPromises);
+            try {
+                const promises = fileNames.map(file => fetch(file).then(res => res.text()));
+                const texts = await Promise.all(promises); // 加载所有文件
 
-            // 合并解析后的书籍数据
-            allBooks = contents.flatMap(parseBooks);
-            displayBooks(allBooks);
+                texts.forEach(text => parseBooks(text)); // 解析每个文件内容
+                filteredBooks = allBooks.filter(book => book.ratingCount >= 5); // 初始过滤，评分人数至少5
+                sortBooks('rating'); // 默认按评分排序
+                populateTable(filteredBooks); // 显示数据
+            } catch (error) {
+                console.error('加载书籍时出错:', error);
+            }
         }
 
-        // 解析 TXT 文件内容
-        function parseBooks(content) {
-            return content.split('\n').filter(line => line.trim()).map(line => {
-                const [id, order, category, rating, votes, name, words, author, link, dbId] = line.split(',');
-                return { name, author, category, rating: parseFloat(rating), votes: parseInt(votes), words, link };
+        // 解析书籍数据
+        function parseBooks(text) {
+            const lines = text.trim().split('\n'); // 按行分割
+            const books = lines.map(line => {
+                const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
+
+                return {
+                    rating: parseFloat(parts[3]) || 'N/A',       // 评分
+                    category: parts[2].replace(/'/g, ""),        // 类别
+                    ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
+                    title: parts[5].replace(/'/g, ""),           // 书名
+                    wordCount: parseInt(parts[6]) || 'N/A',      // 字数
+                    author: parts[7].replace(/'/g, ""),          // 作者
+                    link: parts[8].replace(/'/g, ""),            // 链接
+                };
             });
+            allBooks = allBooks.concat(books); // 合并所有书籍
         }
 
-        // 根据评分和评分人数过滤书籍
-        function filterBooks() {
-            const ratingFilter = parseFloat(document.getElementById('ratingFilter').value) || 0;
-            const filterVotes = document.getElementById('votesFilter').checked;
+        // 填充表格
+        function populateTable(books) {
+            const tbody = document.getElementById('bookTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; // 清空表格内容
 
-            const filteredBooks = allBooks.filter(book => {
-                const isRatingMatch = ratingFilter === 0 || (book.rating >= ratingFilter && book.rating < ratingFilter + 1);
-                const isVotesMatch = !filterVotes || book.votes >= 5;
-                return isRatingMatch && isVotesMatch;
-            });
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedBooks = books.slice(start, end); // 分页
 
-            displayBooks(filteredBooks);
-        }
-
-        // 显示书籍列表
-        function displayBooks(books) {
-            const tableBody = document.getElementById('bookTable');
-            tableBody.innerHTML = ''; // 清空表格内容
-
-            books.forEach(book => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${book.name}</td>
-                    <td>${book.author}</td>
-                    <td>${book.category}</td>
+            paginatedBooks.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                     <td>${book.rating}</td>
-                    <td>${book.words}</td>
+                    <td>${book.category}</td>
+                    <td>${book.ratingCount}</td>
+                    <td>${book.title}</td>
+                    <td>${book.wordCount}</td>
+                    <td>${book.author}</td>
                     <td><a href="${book.link}" target="_blank">链接</a></td>
                 `;
-                tableBody.appendChild(row);
+                tbody.appendChild(tr);
             });
+
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = end >= books.length;
         }
 
-        // 初始化加载书籍
+        // 过滤表格
+        function filterTable() {
+            const nameInput = document.getElementById("nameFilter").value.toUpperCase();
+            const categoryFilter = document.getElementById("categoryFilter").value;
+            const ratingFilter = document.getElementById("ratingFilter").value;
+            const isRatingCountFiltered = document.getElementById("ratingCountFilter").checked;
+
+            filteredBooks = allBooks.filter(book => {
+                const matchesName = book.title.toUpperCase().includes(nameInput);
+                const matchesCategory = !categoryFilter || book.category.includes(categoryFilter);
+                const matchesRating = filterByRating(book.rating, ratingFilter);
+                const matchesRatingCount = isRatingCountFiltered ? book.ratingCount >= 5 : true;
+
+                return matchesName && matchesCategory && matchesRating && matchesRatingCount;
+            });
+
+            currentPage = 1;
+            populateTable(filteredBooks);
+        }
+
+        // 按评分区间过滤
+        function filterByRating(rating, filter) {
+            if (filter === "") return true; // 不过滤
+            const [min, max] = filter.split('-').map(Number);
+            return rating >= min && rating < max;
+        }
+
+        // 改变页面
+        function changePage(direction) {
+            currentPage += direction;
+            populateTable(filteredBooks);
+        }
+
+        // 按评分从高到低排序
+        function sortBooks(field) {
+            filteredBooks.sort((a, b) => (b[field] || 0) - (a[field] || 0));
+        }
+
+        // 点击表头进行排序
+        function sortTable(field) {
+            sortBooks(field);
+            currentPage = 1;
+            populateTable(filteredBooks);
+        }
+
         loadBooks();
     </script>
 </body>
+
 </html>
