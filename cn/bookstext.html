@@ -91,12 +91,13 @@
             allBooks = lines.map(line => {
                 const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
                 
+                // 注意：根据实际数据顺序解析
                 return {
                     id: parseInt(parts[0]),                      // 编号
                     category: parts[2].replace(/'/g, ""),        // 类别
                     rating: parseFloat(parts[3]) || 'N/A',       // 评分
                     ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
-                    title: parts[5].replace(/'/g, ""),           // 书名
+                    title: parts[5].replace(/'/g, "").replace(/(^'|'$)/g, ""), // 书名
                     wordCount: parseInt(parts[6]) || 'N/A',      // 字数
                     author: parts[7].replace(/'/g, ""),          // 作者
                     link: parts[8].replace(/'/g, ""),            // 链接
