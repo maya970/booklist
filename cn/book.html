@@ -188,8 +188,9 @@
     <table id="bookTable">
         <thead>
             <tr>
-                <th>编号</th>
+               
                 <th onclick="sortTable('rating')">评分</th>
+                 <th>编号</th>
                 <th>类别</th>
                 <th>评分人数</th>
                 <th>书名</th>
@@ -270,8 +271,9 @@
             paginatedBooks.forEach(book => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${book.id}</td>
+                    
                     <td>${book.rating}</td>
+                    <td>${book.id}</td>
                     <td>${book.category}</td>
                     <td>${book.ratingCount}</td>
                     <td>${book.title}</td>
