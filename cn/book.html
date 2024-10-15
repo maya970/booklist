@@ -246,8 +246,9 @@
                 const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
 
                 return {
-                    id: parseInt(parts[0]),                    // 编号
+                   
                     rating: parseFloat(parts[3]) || 'N/A',       // 评分
+                     id: parseInt(parts[0]),                    // 编号
                     category: parts[2].replace(/'/g, ""),        // 类别
                     ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
                     title: parts[5].replace(/'/g, ""),           // 书名
