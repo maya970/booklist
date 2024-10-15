@@ -176,15 +176,12 @@
             <option value="两宋元明">两宋元明</option>
         </select>
         <select id="ratingFilter" onchange="filterTable()">
-            <option value="7-10">7-10星</option>
+            <option value="">所有评分</option>
             <option value="6-7">6-7 星</option>
             <option value="5-6">5-6 星</option>
             <option value="4-5">4-5 星</option>
             <option value="0-4">0-4 星</option>
         </select>
-        <label>
-            <input type="checkbox" id="ratingCountFilter" onchange="filterTable()"> 过滤评分人数少于5
-        </label>
     </div>
 
     <table id="bookTable">
@@ -269,7 +266,7 @@
 
             paginatedBooks.forEach(book => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = 
+                tr.innerHTML = `
                     <td>${book.rating}</td>
                     <td>${book.category}</td>
                     <td>${book.ratingCount}</td>
@@ -277,7 +274,7 @@
                     <td>${book.wordCount}</td>
                     <td>${book.author}</td>
                     <td><a href="${book.link}" target="_blank">链接</a></td>
-                ;
+                `;
                 tbody.appendChild(tr);
             });
 
