@@ -43,13 +43,16 @@
     <table id="bookTable">
         <thead>
             <tr>
-                <th>书名</th>
-                <th>作者</th>
+                <th>编号</th>
+                <th>序号</th>
                 <th>类别</th>
                 <th>评分</th>
+                <th>评分人数</th>
+                <th>书名</th>
                 <th>字数</th>
-                <th>图片</th>
+                <th>作者</th>
                 <th>链接</th>
+                <th>数据库编号</th>
             </tr>
         </thead>
         <tbody>
@@ -91,15 +94,17 @@
                 const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
                 
                 return {
-                    id: parseInt(parts[0]),
-                    category: parts[2].replace(/'/g, ""), // 移除引号
-                    rating: parseFloat(parts[3]),
-                    wordCount: parseInt(parts[4]),
-                    title: parts[5].replace(/'/g, ""), // 移除引号
-                    author: parts[7].replace(/'/g, ""), // 移除引号
-                    image: parts[8], // 图像 URL
-                    link: parts[6].replace(/'/g, ""), // 书籍链接
-                    publishDate: parts[9]
+                    id: parseInt(parts[0]),                    // 编号
+                    serial: parseInt(parts[1]),                // 序号
+                    category: parts[2].replace(/'/g, ""),      // 类别
+                    rating: parseFloat(parts[3]),              // 评分
+                    ratingCount: parseInt(parts[4]),           // 评分人数
+                    title: parts[5].replace(/'/g, ""),         // 书名
+                    wordCount: parseInt(parts[6]),             // 字数
+                    author: parts[7].replace(/'/g, ""),        // 作者
+                    link: parts[8].replace(/'/g, ""),          // 链接
+                    databaseId: parseInt(parts[9]),            // 数据库编号
+                    image: parts[10]                           // 图像 URL (如果有的话，确保txt里有对应列)
                 };
             });
         }
@@ -116,13 +121,16 @@
             paginatedBooks.forEach(book => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${book.title}</td>
-                    <td>${book.author}</td>
+                    <td>${book.id}</td>
+                    <td>${book.serial}</td>
                     <td>${book.category}</td>
                     <td>${book.rating}</td>
+                    <td>${book.ratingCount}</td>
+                    <td>${book.title}</td>
                     <td>${book.wordCount}</td>
-                    <td><img src="${book.image}" alt="${book.title}" width="50" /></td>
+                    <td>${book.author}</td>
                     <td><a href="${book.link}" target="_blank">链接</a></td>
+                    <td>${book.databaseId}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -142,7 +150,7 @@
             filteredBooks = allBooks.filter(book => {
                 const matchesName = book.title.toUpperCase().includes(nameInput);
                 const matchesCategory = !categoryFilter || book.category.includes(categoryFilter);
-                const matchesRating = !ratingFilter || parseFloat(book.rating) >= parseFloat(ratingFilter);
+                const matchesRating = !ratingFilter || book.rating >= parseFloat(ratingFilter);
 
                 return matchesName && matchesCategory && matchesRating;
             });
