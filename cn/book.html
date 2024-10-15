@@ -247,14 +247,24 @@
 
                 return {
                    
-                    rating: parseFloat(parts[3]) || 'N/A',       // 评分
-        
-                    category: parts[2].replace(/'/g, ""),        // 类别
-                    ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
-                    title: parts[5].replace(/'/g, ""),           // 书名
-                    wordCount: parseInt(parts[6]) || 'N/A',      // 字数
-                    author: parts[7].replace(/'/g, ""),          // 作者
-                    link: parts[8].replace(/'/g, ""),            // 链接
+// 解析书籍数据
+function parseBooks(text) {
+    const lines = text.trim().split('\n'); // 按行分割
+    const books = lines.map(line => {
+        const parts = line.split(',').map(part => part.trim().replace(/^'(.*)'$/, '$1')); // 去掉多余空格和引号
+
+        return {
+            rating: parseFloat(parts[3]) || 0, // 如果解析失败，设为0
+            category: parts[2].replace(/'/g, ""), // 类别
+            ratingCount: parseInt(parts[4]) || 0, // 评分人数
+            title: parts[5].replace(/'/g, ""), // 书名
+            wordCount: parseInt(parts[6]) || 0, // 字数
+            author: parts[7].replace(/'/g, ""), // 作者
+            link: parts[8].replace(/'/g, ""), // 链接
+        };
+    });
+    allBooks = allBooks.concat(books); // 合并所有书籍
+}
                 };
             });
             allBooks = allBooks.concat(books); // 合并所有书籍
