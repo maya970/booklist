@@ -236,7 +236,7 @@
 
                 return {
                     
-                    rating: (parseFloat(parts[2]) + parseFloat(parts[1])) || 'N/A',  // 星级
+                    rating: parseFloat(parts[3]) || 'N/A',       // 评分
                     category: parts[2].replace(/'/g, ""),        // 类别
                     ratingCount: parseInt(parts[4]) || 'N/A',    // 评分人数
                     title: parts[5].replace(/'/g, ""),           // 书名
